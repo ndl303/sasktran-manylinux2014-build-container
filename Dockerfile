@@ -33,7 +33,7 @@ RUN cd ~ && wget -nv https://archives.boost.io/release/1.82.0/source/boost_1_82_
 RUN cd ~/boost_1_82_0 && ./bootstrap.sh && ./b2 cxxflags="-fPIC" cflags="-fPIC" link=static --without-python install
 
 #zlib ugh
-RUN cd ~ && wget -nv https://zlib.net/zlib-1.3.2.tar.gz && tar xf zlib-1.3.2.tar.gz
+RUN cd ~ && wget -nv https://github.com/madler/zlib/releases/download/v1.3.2/zlib-1.3.2.tar.gz && tar xf zlib-1.3.2.tar.gz
 RUN mkdir ~/zlib-1.3.2/build && cd ~/zlib-1.3.2/build && cmake ../ -DCMAKE_INSTALL_PREFIX=$INSTALLPREFIX -DBUILD_SHARED_LIBS:BOOL=OFF -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true && cmake --build . && cmake --install . > /dev/null 2>&1
 # zlib builds shared libraries anyways so we remove them to force static link
 # although I'm pretty sure netcdf is dynamically linking system zlib anyway even though hdf5 complains about it
