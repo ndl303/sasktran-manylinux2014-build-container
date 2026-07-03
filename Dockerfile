@@ -41,10 +41,7 @@ RUN mkdir ~/zlib-1.3.2/build && cd ~/zlib-1.3.2/build && cmake ../ -DCMAKE_INSTA
 
 #hdf5
 RUN cd ~ && wget -nv https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_12_1.tar.gz && tar xf hdf5-1_12_1.tar.gz
-RUN mkdir ~/hdf5-hdf5-1_12_1/build && cd ~/hdf5-hdf5-1_12_1/build
-RUN cmake ../ -DBUILD_SHARED_LIBS:BOOL=OFF -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true -DCMAKE_INSTALL_PREFIX=$INSTALLPREFIX -DHDF5_ENABLE_Z_LIB_SUPPORT:BOOL=ON -DZLIB_INCLUDE_DIR=/usr/local/include -DZLIB_LIBRARY=/usr/local/lib64/libz.a -DCMAKE_EXE_LINKER_FLAGS="-lz -ldl"
-RUN cmake --build . 
-RUN cmake --install . > /dev/null 2>&1
+RUN mkdir ~/hdf5-hdf5-1_12_1/build && cd ~/hdf5-hdf5-1_12_1/build && cmake ../ -DBUILD_SHARED_LIBS:BOOL=OFF -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true -DCMAKE_INSTALL_PREFIX=$INSTALLPREFIX -DHDF5_ENABLE_Z_LIB_SUPPORT:BOOL=ON -DZLIB_INCLUDE_DIR=/usr/local/include -DZLIB_LIBRARY=/usr/local/lib64/libz.a -DCMAKE_EXE_LINKER_FLAGS="-lz -ldl" && cmake --build . && cmake --install . > /dev/null 2>&1
 
 # netcdf-c, if we statically link against hdf5 we have to explicitly link lz and ldl
 RUN cd ~ && wget -nv https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.8.1.tar.gz && tar xf v4.8.1.tar.gz
