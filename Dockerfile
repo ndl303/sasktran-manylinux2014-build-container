@@ -1,4 +1,4 @@
-from quay.io/pypa/manylinux_2_28_x86_64:latest
+FROM quay.io/pypa/manylinux_2_28_x86_64:latest
 
 RUN yum -y update && yum -y install wget openssh openssh-clients
 
@@ -17,9 +17,8 @@ RUN echo "$SSH_PRV_KEY" > /root/.ssh/id_rsa && \
     chmod 600 /root/.ssh/id_rsa && \
     chmod 600 /root/.ssh/id_rsa.pub
 
-
-
-ENV INSTALLPREFIX /usr/local
+ENV INSTALLPREFIX=/usr/local
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib64
 
 # lapack
 RUN cd ~ && wget -nv https://github.com/xianyi/OpenBLAS/releases/download/v0.3.18/OpenBLAS-0.3.18.tar.gz && tar xf OpenBLAS-0.3.18.tar.gz
@@ -34,26 +33,26 @@ RUN cd ~ && wget -nv https://archives.boost.io/release/1.82.0/source/boost_1_82_
 RUN cd ~/boost_1_82_0 && ./bootstrap.sh && ./b2 cxxflags="-fPIC" cflags="-fPIC" link=static --without-python install
 
 #zlib ugh
-RUN cd ~ && wget -nv https://zlib.net/current/zlib.tar.gz && tar xf zlib.tar.gz
-RUN mkdir ~/zlib-1.3.1/build && cd ~/zlib-1.3.1/build && cmake ../ -DCMAKE_INSTALL_PREFIX=$INSTALLPREFIX -DBUILD_SHARED_LIBS:BOOL=OFF -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true && cmake --build . && cmake --install . > /dev/null 2>&1
+RUN cd ~ && wget -nv https://github.com/madler/zlib/releases/download/v1.3.2/zlib-1.3.2.tar.gz && tar xf zlib-1.3.2.tar.gz
+RUN mkdir ~/zlib-1.3.2/build && cd ~/zlib-1.3.2/build && cmake ../ -DCMAKE_INSTALL_PREFIX=$INSTALLPREFIX -DBUILD_SHARED_LIBS:BOOL=OFF -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true && cmake --build . && cmake --install . > /dev/null 2>&1
 # zlib builds shared libraries anyways so we remove them to force static link
 # although I'm pretty sure netcdf is dynamically linking system zlib anyway even though hdf5 complains about it
-RUN rm -rf /usr/local/lib/libz.so*
+# RUN rm -rf /usr/local/lib64/libz.so*
 
 #hdf5
 RUN cd ~ && wget -nv https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_12_1.tar.gz && tar xf hdf5-1_12_1.tar.gz
-RUN mkdir ~/hdf5-hdf5-1_12_1/build && cd ~/hdf5-hdf5-1_12_1/build && cmake ../ -DBUILD_SHARED_LIBS:BOOL=OFF -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true -DCMAKE_INSTALL_PREFIX=$INSTALLPREFIX -DHDF5_ENABLE_Z_LIB_SUPPORT:BOOL=ON -DZLIB_DIR=/lib/x86_x64-linux-gnu/ && cmake --build . && cmake --install . > /dev/null 2>&1
+RUN mkdir ~/hdf5-hdf5-1_12_1/build && cd ~/hdf5-hdf5-1_12_1/build && cmake ../ -DBUILD_SHARED_LIBS:BOOL=OFF -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true -DCMAKE_INSTALL_PREFIX=$INSTALLPREFIX -DHDF5_ENABLE_Z_LIB_SUPPORT:BOOL=ON -DZLIB_INCLUDE_DIR=/usr/local/include -DZLIB_LIBRARY=/usr/local/lib64/libz.a -DCMAKE_EXE_LINKER_FLAGS="-lz -ldl" && cmake --build . && cmake --install . > /dev/null 2>&1
 
 # netcdf-c, if we statically link against hdf5 we have to explicitly link lz and ldl
-RUN cd ~ && wget -nv https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.10.0.tar.gz && tar xf v4.10.0.tar.gz
-RUN mkdir ~/netcdf-c-4.10.0/build && cd ~/netcdf-c-4.10.0/build && cmake ../ -DBUILD_SHARED_LIBS:BOOL=OFF -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true -DBUILD_UTILITIES:bool=OFF -DENABLE_DAP:BOOL=off -DCMAKE_EXE_LINKER_FLAGS="-lz -ldl" -DCMAKE_INSTALL_PREFIX=$INSTALLPREFIX && cmake --build . && cmake --install . > /dev/null 2>&1
+RUN cd ~ && wget -nv https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.8.1.tar.gz && tar xf v4.8.1.tar.gz
+RUN mkdir ~/netcdf-c-4.8.1/build && cd ~/netcdf-c-4.8.1/build && cmake ../ -DBUILD_SHARED_LIBS:BOOL=OFF -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true -DBUILD_UTILITIES:bool=OFF -DENABLE_DAP:BOOL=off -DCMAKE_EXE_LINKER_FLAGS="-lz -ldl" -DCMAKE_INSTALL_PREFIX=$INSTALLPREFIX && cmake --build . && cmake --install . > /dev/null 2>&1
 
 # yaml-cpp
 RUN cd ~ && wget -nv https://github.com/jbeder/yaml-cpp/archive/refs/tags/yaml-cpp-0.9.0.tar.gz && tar xf yaml-cpp-0.9.0.tar.gz
 RUN mkdir ~/yaml-cpp-yaml-cpp-0.9.0/build && cd ~/yaml-cpp-yaml-cpp-0.9.0/build && cmake ../ -DCMAKE_INSTALL_PREFIX=$INSTALLPREFIX -DBUILD_SHARED_LIBS:BOOL=OFF -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true && cmake --build . && cmake --install . > /dev/null 2>&1
 
 # catch2
-RUN cd ~ && wget -nv https://github.com/catchorg/Catch2/archive/refs/tags/v3.3.2.tar.gz && tar xf v3.3.2.tar.gz
+RUN cd ~ && wget -nv https://github.com/catchorg/Catch2/archive/refs/tags/v3.15.1.tar.gz && tar xf v3.15.1.tar.gz
 RUN mkdir ~/Catch2-3.15.1/build && cd ~/Catch2-3.15.1/build && cmake ../ -DCMAKE_INSTALL_PREFIX=$INSTALLPREFIX -DBUILD_SHARED_LIBS:BOOL=OFF -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true && cmake --build . && cmake --install . > /dev/null 2>&1
 
 # Install numpy in the python environments, build against numpy > 2
