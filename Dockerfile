@@ -56,6 +56,10 @@ RUN cd ~ && wget -nv https://github.com/catchorg/Catch2/archive/refs/tags/v3.15.
 RUN mkdir ~/Catch2-3.15.1/build && cd ~/Catch2-3.15.1/build && cmake ../ -DCMAKE_INSTALL_PREFIX=$INSTALLPREFIX -DBUILD_SHARED_LIBS:BOOL=OFF -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true && cmake --build . && cmake --install . > /dev/null 2>&1
 
 # Install numpy in the python environments, build against numpy > 2
+RUN /opt/python/cp310-cp310/bin/pip install setuptools
+RUN /opt/python/cp311-cp311/bin/pip install setuptools
+RUN /opt/python/cp312-cp312/bin/pip install setuptools
+RUN /opt/python/cp313-cp313/bin/pip install setuptools
 RUN /opt/python/cp310-cp310/bin/pip install numpy>=2.0
 RUN /opt/python/cp311-cp311/bin/pip install numpy>=2.0
 RUN /opt/python/cp312-cp312/bin/pip install numpy>=2.0
