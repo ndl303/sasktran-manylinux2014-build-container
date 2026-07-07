@@ -60,7 +60,7 @@ RUN /opt/python/cp310-cp310/bin/pip install setuptools
 RUN /opt/python/cp311-cp311/bin/pip install setuptools
 RUN /opt/python/cp312-cp312/bin/pip install setuptools
 RUN /opt/python/cp313-cp313/bin/pip install setuptools
-RUN /opt/python/cp310-cp310/bin/pip install numpy>=2.0
-RUN /opt/python/cp311-cp311/bin/pip install numpy>=2.0
-RUN /opt/python/cp312-cp312/bin/pip install numpy>=2.0
-RUN /opt/python/cp313-cp313/bin/pip install numpy>=2.0
+RUN /opt/python/cp310-cp310/bin/pip install numpy==2.0.0
+RUN /opt/python/cp311-cp311/bin/pip install numpy==2.0.0
+RUN /opt/python/cp312-cp312/bin/pip install numpy==2.0.0
+RUN /opt/python/cp313-cp313/bin/pip install numpy==2.0.0
